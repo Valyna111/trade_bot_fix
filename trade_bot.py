@@ -282,7 +282,7 @@ if not BOT_TOKEN:
     print("❌ Не найден TRADE_BOT_TOKEN или BOT_TOKEN в .env файле")
     sys.exit(1)
 
-CHECK_INTERVAL = 10  # ИЗМЕНЕНО: было 30, стало 15 (оптимальный баланс скорости и безопасности)
+CHECK_INTERVAL = 15  # ИЗМЕНЕНО: было 30, стало 15 (оптимальный баланс скорости и безопасности)
 SESSIONS_FILE = Path(__file__).parent / "tg_sessions.json"
 PROCESSED_TRADES_FILE = Path(__file__).parent / "processed_trades.json"
 
