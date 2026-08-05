@@ -193,31 +193,63 @@ class WSManager:
 
 
 # ============================================================================
-#  ФАБРИКА
+#  ГЛОБАЛЬНЫЙ МЕНЕДЖЕР И ФУНКЦИИ ДЛЯ ИМПОРТА
 # ============================================================================
 
-ws_manager = WSManager()
+_ws_manager = WSManager()
 
 
 def start_ws(chat_id: int, user_id: str, cookies: dict) -> bool:
-    """Запускает WebSocket для указанного чата"""
-    return ws_manager.start(chat_id, user_id, cookies)
+    """
+    Запускает WebSocket для указанного чата.
+    
+    Args:
+        chat_id: ID чата в Telegram
+        user_id: ID пользователя на mangabuff.ru
+        cookies: Cookies для авторизации
+    
+    Returns:
+        bool: True если запущен успешно
+    """
+    return _ws_manager.start(chat_id, user_id, cookies)
 
 
 def stop_ws() -> None:
     """Останавливает WebSocket"""
-    ws_manager.stop()
+    _ws_manager.stop()
 
 
 def ws_is_active() -> bool:
     """Проверяет, активен ли WebSocket"""
-    return ws_manager.is_active()
+    return _ws_manager.is_active()
 
 
 # ============================================================================
-#  ТЕСТОВЫЙ ЗАПУСК
+#  ЗАПУСК В РЕЖИМЕ ОЖИДАНИЯ (для отладки, не используется в основном боте)
 # ============================================================================
 
 if __name__ == '__main__':
-    print("[WS] Тестовый запуск wsexchange.py")
-    print(f"[WS] Хост: {WSS_HOST}, синхронизация: {SYNC_SEC} сек")
+    """
+    Этот блок выполняется ТОЛЬКО при прямом запуске wsexchange.py.
+    В основном боте (trade_bot.py) он НЕ выполняется, потому что
+    trade_bot.py импортирует функции, а не запускает файл как скрипт.
+    """
+    print("[WS] Запуск WebSocket-менеджера в режиме ожидания...")
+    print(f"[WS] Хост: {WSS_HOST}")
+    print("[WS] Ожидание команд... (Ctrl+C для остановки)")
+    
+    try:
+        # Бесконечное ожидание с проверкой триггеров
+        while True:
+            # Проверяем, есть ли файл-триггер
+            if WS_TRIGGER_FILE.exists():
+                try:
+                    data = json.loads(WS_TRIGGER_FILE.read_text(encoding="utf-8"))
+                    print(f"[WS] Обнаружен триггер: {data}")
+                except Exception as e:
+                    print(f"[WS] Ошибка чтения триггера: {e}")
+            
+            time.sleep(10)
+    except KeyboardInterrupt:
+        print("\n[WS] Завершение...")
+        sys.exit(0)
